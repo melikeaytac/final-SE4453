@@ -1,0 +1,36 @@
+name: Build and Push to ACR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Docker Login to ACR
+      uses: azure/docker-login@v1
+      with:
+        login-server: finalacr01.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    - name: Build and Push Docker Image
+      run: |
+        docker build . -t finalacr01.azurecr.io/finalproject:${{ github.sha }}
+        docker push finalacr01.azurecr.io/finalproject:${{ github.sha }}
+
+    - name: Deploy to App Service
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: <app-service-name>
+        images: finalacr01.azurecr.io/finalproject:${{ github.sha }}
