@@ -5,7 +5,8 @@ COPY src ./src
 RUN mvn clean package
 
 FROM tomcat:10-jre8-openjdk-buster
-RUN apt-get update && apt-get install -y openssh-server && mkdir /var/run/sshd
+RUN apt-get update && apt-get install -y openssh-server && mkdir /var/run/sshd && echo 'root:1234' | chpasswd
+
 
 # WAR ve ROOT klasörünü Tomcat'e kopyala
 COPY --from=build /build/target/ROOT.war /usr/local/tomcat/webapps/ROOT.war

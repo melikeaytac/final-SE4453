@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# SSH başlat
-service ssh start
+/usr/sbin/sshd
 
 # Tomcat başlat
 catalina.sh run
